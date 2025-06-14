@@ -1,7 +1,7 @@
 <template>
   <div class="ww-payment-plan-popup">
     <!-- Trigger Button -->
-    <button @click="showPopup" class="payment-plan-trigger-btn">
+    <button @click="showPopup" class="payment-plan-trigger-btn" :style="buttonStyles">
       {{ content.buttonText || 'Create Payment Plan' }}
     </button>
 
@@ -195,7 +195,14 @@ export default {
     title: 'Create Payment Plan',
     vendorId: '',
     vendorName: '',
-    quotedAmount: 0
+    quotedAmount: 0,
+    // Button styling options
+    buttonBackgroundColor: '#10b981',
+    buttonTextColor: '#ffffff',
+    buttonBorderRadius: '8px',
+    buttonPadding: '12px 24px',
+    buttonFontSize: '14px',
+    buttonFontWeight: '600'
   },
   /* wwEditor:end */
   
@@ -239,6 +246,18 @@ export default {
         return Math.max(0, total - payment);
       }
       return null;
+    },
+
+    // Dynamic button styles based on content properties
+    buttonStyles() {
+      return {
+        backgroundColor: this.content.buttonBackgroundColor || '#10b981',
+        color: this.content.buttonTextColor || '#ffffff',
+        borderRadius: this.content.buttonBorderRadius || '8px',
+        padding: this.content.buttonPadding || '12px 24px',
+        fontSize: this.content.buttonFontSize || '14px',
+        fontWeight: this.content.buttonFontWeight || '600'
+      };
     }
   },
   
@@ -267,6 +286,16 @@ export default {
       this.resetForm();
       this.formData.vendorId = this.content.vendorId || '';
       this.formData.totalAmount = this.quotedAmount;
+      
+      // Trigger event for analytics/tracking
+      this.$emit('trigger-event', {
+        name: 'payment-popup-opened',
+        event: {
+          action: 'popup_opened',
+          vendor_id: this.content.vendorId,
+          vendor_name: this.selectedVendorName
+        }
+      });
     },
 
     hidePopup() {
@@ -424,6 +453,7 @@ export default {
 }
 
 .payment-plan-trigger-btn {
+  /* Default styles - will be overridden by dynamic styles */
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border: none;
@@ -439,6 +469,7 @@ export default {
 .payment-plan-trigger-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  filter: brightness(1.05);
 }
 
 .popup-overlay {
