@@ -1,925 +1,330 @@
 export default {
   editor: {
     label: 'Payment Plan Popup v3.0',
-    icon: 'payment',
-    customStylePropertiesOrder: [
-      ['buttonBackgroundColor', 'buttonTextColor'],
-      ['buttonBorderRadius', 'buttonPadding'],
-      ['buttonFontSize', 'buttonFontWeight'],
-      ['cancelButtonBackgroundColor', 'cancelButtonTextColor'],
-      ['submitButtonBackgroundColor', 'submitButtonTextColor'],
-      ['closeButtonColor', 'labelColor'],
-      ['inputBorderColor', 'inputFocusColor'],
-      ['balanceInfoBackgroundColor', 'balanceInfoBorderColor']
-    ],
-    customSettingsPropertiesOrder: [
-      // Content Settings
-      'buttonText',
-      'title',
-      
-      // Static Vendor Data (Read-only in editor, pulled from context)
-      'staticVendorId',
-      'staticVendorName', 
-      'staticQuotedAmount',
-      
-      // Editable Form Labels
-      'invoiceLabel',
-      'invoicePlaceholder',
-      'totalAmountLabel',
-      'paymentAmountLabel',
-      'amountRemainingLabel',
-      'amountRemainingPlaceholder',
-      'amountRemainingHelper',
-      'paymentTypeLabel',
-      'immediatePaymentText',
-      'historicalPaymentText',
-      'scheduledPaymentText',
-      'paymentDateLabel',
-      'paymentDateHelper',
-      'scheduledDateLabel',
-      'scheduledDateHelper',
-      'paymentMethodLabel',
-      'paymentMethodPlaceholder',
-      'paymentReferenceLabel',
-      'notesLabel',
-      'notesPlaceholder',
-      'cancelButtonText',
-      'processingText',
-      
-      // Submit Button Text
-      'immediateSubmitText',
-      'historicalSubmitText',
-      'scheduledSubmitText',
-      
-      // Supabase Settings
-      'supabaseUrl',
-      'supabaseKey',
-      'tableName'
-    ]
+    icon: 'payment'
+  },
+  inherit: {
+    type: 'ww-text',
+    values: {
+      text: {
+        en: 'Payment Plan'
+      }
+    }
   },
   properties: {
-    // Main Button and Title
+    // Button text
     buttonText: {
-      label: 'Button Text',
+      label: {
+        en: 'Button Text'
+      },
       type: 'Text',
       options: {
-        placeholder: 'Create Payment Plan'
+        placeholder: 'Enter button text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Create Payment Plan'
+      defaultValue: 'Open Payment Plan',
+      bindable: true
     },
+    
+    // Modal title
     title: {
-      label: 'Popup Title', 
+      label: {
+        en: 'Modal Title'
+      },
       type: 'Text',
       options: {
-        placeholder: 'Create Payment Plan'
+        placeholder: 'Enter modal title'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Create Payment Plan'
+      defaultValue: 'Payment Plan',
+      bindable: true
     },
 
-    // Static Vendor Data (populated from context)
+    // Static vendor data (read-only, pulled from context)
     staticVendorId: {
-      label: 'Vendor ID (Static)',
+      label: {
+        en: 'Vendor ID (from context)'
+      },
       type: 'Text',
       options: {
-        placeholder: 'Auto-populated from context',
         readonly: true
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: ''
+      bindable: true
     },
+
     staticVendorName: {
-      label: 'Vendor Name (Static)',
-      type: 'Text', 
+      label: {
+        en: 'Vendor Name (from context)'
+      },
+      type: 'Text',
       options: {
-        placeholder: 'Auto-populated from context',
         readonly: true
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: ''
+      bindable: true
     },
+
     staticQuotedAmount: {
-      label: 'Quoted Amount (Static)',
+      label: {
+        en: 'Quoted Amount (from context)'
+      },
       type: 'Number',
       options: {
-        placeholder: '0.00',
-        min: 0,
-        step: 0.01,
         readonly: true
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 0
+      bindable: true
     },
 
-    // Form Labels - All Editable
+    // Form field labels (editable in the editor)
     invoiceLabel: {
-      label: 'Invoice Label',
-      type: 'Text',
-      options: {
-        placeholder: 'Invoice/Reference Number'
+      label: {
+        en: 'Invoice Label'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Invoice/Reference Number'
+      type: 'Text',
+      defaultValue: 'Invoice/Reference Number',
+      bindable: true
     },
+
     invoicePlaceholder: {
-      label: 'Invoice Placeholder',
-      type: 'Text',
-      options: {
-        placeholder: 'INV-2024-001'
+      label: {
+        en: 'Invoice Placeholder'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'INV-2024-001'
+      type: 'Text',
+      defaultValue: 'Enter invoice or reference number',
+      bindable: true
     },
+
     totalAmountLabel: {
-      label: 'Total Amount Label',
-      type: 'Text',
-      options: {
-        placeholder: 'Total Amount Owed'
+      label: {
+        en: 'Total Amount Label'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Total Amount Owed'
+      type: 'Text',
+      defaultValue: 'Total Amount',
+      bindable: true
     },
+
     paymentAmountLabel: {
-      label: 'Payment Amount Label',
-      type: 'Text',
-      options: {
-        placeholder: 'Payment Amount'
+      label: {
+        en: 'Payment Amount Label'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Payment Amount'
+      type: 'Text',
+      defaultValue: 'Payment Amount',
+      bindable: true
     },
 
-    // New Amount Remaining Field
     amountRemainingLabel: {
-      label: 'Amount Remaining Label',
-      type: 'Text',
-      options: {
-        placeholder: 'Amount Remaining'
+      label: {
+        en: 'Amount Remaining Label'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Amount Remaining'
+      type: 'Text',
+      defaultValue: 'Amount Remaining',
+      bindable: true
     },
+
     amountRemainingPlaceholder: {
-      label: 'Amount Remaining Placeholder',
-      type: 'Text',
-      options: {
-        placeholder: '0.00'
+      label: {
+        en: 'Amount Remaining Placeholder'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '0.00'
+      type: 'Text',
+      defaultValue: 'Enter payment amount',
+      bindable: true
     },
+
     amountRemainingHelper: {
-      label: 'Amount Remaining Helper Text',
-      type: 'Text',
-      options: {
-        placeholder: 'Enter the remaining amount after this payment'
+      label: {
+        en: 'Amount Remaining Helper Text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Enter the remaining amount after this payment'
+      type: 'Text',
+      defaultValue: 'Enter the amount you want to pay now',
+      bindable: true
     },
 
-    // Payment Type Labels
     paymentTypeLabel: {
-      label: 'Payment Type Label',
-      type: 'Text',
-      options: {
-        placeholder: 'Payment Type'
+      label: {
+        en: 'Payment Type Label'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Payment Type'
+      type: 'Text',
+      defaultValue: 'Payment Type',
+      bindable: true
     },
+
     immediatePaymentText: {
-      label: 'Immediate Payment Text',
-      type: 'Text',
-      options: {
-        placeholder: 'Payment Made Today'
+      label: {
+        en: 'Immediate Payment Text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Payment Made Today'
+      type: 'Text',
+      defaultValue: 'Immediate Payment',
+      bindable: true
     },
+
     historicalPaymentText: {
-      label: 'Historical Payment Text',
-      type: 'Text',
-      options: {
-        placeholder: 'Historical Payment (Already Made)'
+      label: {
+        en: 'Historical Payment Text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Historical Payment (Already Made)'
+      type: 'Text',
+      defaultValue: 'Historical Payment',
+      bindable: true
     },
+
     scheduledPaymentText: {
-      label: 'Scheduled Payment Text',
-      type: 'Text',
-      options: {
-        placeholder: 'Scheduled Future Payment'
+      label: {
+        en: 'Scheduled Payment Text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Scheduled Future Payment'
+      type: 'Text',
+      defaultValue: 'Scheduled Payment',
+      bindable: true
     },
 
-    // Date Labels
     paymentDateLabel: {
-      label: 'Payment Date Label',
-      type: 'Text',
-      options: {
-        placeholder: 'Payment Date'
+      label: {
+        en: 'Payment Date Label'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Payment Date'
+      type: 'Text',
+      defaultValue: 'Payment Date',
+      bindable: true
     },
+
     paymentDateHelper: {
-      label: 'Payment Date Helper',
-      type: 'Text',
-      options: {
-        placeholder: 'When was this payment actually made?'
+      label: {
+        en: 'Payment Date Helper Text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'When was this payment actually made?'
+      type: 'Text',
+      defaultValue: 'When was this payment made?',
+      bindable: true
     },
+
     scheduledDateLabel: {
-      label: 'Scheduled Date Label',
-      type: 'Text',
-      options: {
-        placeholder: 'Scheduled Payment Date'
+      label: {
+        en: 'Scheduled Date Label'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Scheduled Payment Date'
+      type: 'Text',
+      defaultValue: 'Scheduled Date',
+      bindable: true
     },
+
     scheduledDateHelper: {
-      label: 'Scheduled Date Helper',
-      type: 'Text',
-      options: {
-        placeholder: 'When do you plan to make this payment?'
+      label: {
+        en: 'Scheduled Date Helper Text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'When do you plan to make this payment?'
+      type: 'Text',
+      defaultValue: 'When should this payment be processed?',
+      bindable: true
     },
 
-    // Payment Method Labels
     paymentMethodLabel: {
-      label: 'Payment Method Label',
-      type: 'Text',
-      options: {
-        placeholder: 'Payment Method'
+      label: {
+        en: 'Payment Method Label'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Payment Method'
+      type: 'Text',
+      defaultValue: 'Payment Method',
+      bindable: true
     },
+
     paymentMethodPlaceholder: {
-      label: 'Payment Method Placeholder',
-      type: 'Text',
-      options: {
-        placeholder: 'Select payment method...'
+      label: {
+        en: 'Payment Method Placeholder'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Select payment method...'
+      type: 'Text',
+      defaultValue: 'e.g., Credit Card, Bank Transfer, Check',
+      bindable: true
     },
+
     paymentReferenceLabel: {
-      label: 'Payment Reference Label',
-      type: 'Text',
-      options: {
-        placeholder: 'Payment Reference'
+      label: {
+        en: 'Payment Reference Label'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Payment Reference'
+      type: 'Text',
+      defaultValue: 'Payment Reference',
+      bindable: true
     },
 
-    // Notes
     notesLabel: {
-      label: 'Notes Label',
-      type: 'Text',
-      options: {
-        placeholder: 'Notes'
+      label: {
+        en: 'Notes Label'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Notes'
+      type: 'Text',
+      defaultValue: 'Notes (Optional)',
+      bindable: true
     },
+
     notesPlaceholder: {
-      label: 'Notes Placeholder',
-      type: 'Text',
-      options: {
-        placeholder: 'Additional notes about this payment...'
+      label: {
+        en: 'Notes Placeholder'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Additional notes about this payment...'
+      type: 'Text',
+      defaultValue: 'Add any additional notes about this payment',
+      bindable: true
     },
 
-    // Button Text
     cancelButtonText: {
-      label: 'Cancel Button Text',
-      type: 'Text',
-      options: {
-        placeholder: 'Cancel'
+      label: {
+        en: 'Cancel Button Text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Cancel'
+      type: 'Text',
+      defaultValue: 'Cancel',
+      bindable: true
     },
+
     processingText: {
-      label: 'Processing Text',
-      type: 'Text',
-      options: {
-        placeholder: 'Creating...'
+      label: {
+        en: 'Processing Text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Creating...'
+      type: 'Text',
+      defaultValue: 'Processing...',
+      bindable: true
     },
 
-    // Submit Button Text Options
     immediateSubmitText: {
-      label: 'Immediate Submit Text',
-      type: 'Text',
-      options: {
-        placeholder: 'Record Payment'
+      label: {
+        en: 'Immediate Submit Button Text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Record Payment'
+      type: 'Text',
+      defaultValue: 'Process Payment',
+      bindable: true
     },
+
     historicalSubmitText: {
-      label: 'Historical Submit Text',
-      type: 'Text',
-      options: {
-        placeholder: 'Add Historical Payment'
+      label: {
+        en: 'Historical Submit Button Text'
       },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Add Historical Payment'
+      type: 'Text',
+      defaultValue: 'Record Payment',
+      bindable: true
     },
+
     scheduledSubmitText: {
-      label: 'Scheduled Submit Text',
+      label: {
+        en: 'Scheduled Submit Button Text'
+      },
       type: 'Text',
-      options: {
-        placeholder: 'Schedule Payment'
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Schedule Payment'
-    },
-
-    // Main Button Styling
-    buttonBackgroundColor: {
-      label: 'Button Background Color',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#10b981'
-    },
-    buttonTextColor: {
-      label: 'Button Text Color', 
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#ffffff'
-    },
-    buttonBorderRadius: {
-      label: 'Button Border Radius',
-      type: 'Length',
-      options: {
-        unitChoices: [
-          { label: 'px', value: 'px' },
-          { label: '%', value: '%' },
-          { label: 'rem', value: 'rem' }
-        ]
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '8px'
-    },
-    buttonPadding: {
-      label: 'Button Padding',
-      type: 'Length',
-      options: {
-        unitChoices: [
-          { label: 'px', value: 'px' },
-          { label: 'rem', value: 'rem' }
-        ]
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '12px 24px'
-    },
-    buttonFontSize: {
-      label: 'Button Font Size',
-      type: 'Length',
-      options: {
-        unitChoices: [
-          { label: 'px', value: 'px' },
-          { label: 'rem', value: 'rem' },
-          { label: 'em', value: 'em' }
-        ]
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '14px'
-    },
-    buttonFontWeight: {
-      label: 'Button Font Weight',
-      type: 'Select',
-      options: {
-        options: [
-          { label: '100 - Thin', value: '100' },
-          { label: '200 - Extra Light', value: '200' },
-          { label: '300 - Light', value: '300' },
-          { label: '400 - Normal', value: '400' },
-          { label: '500 - Medium', value: '500' },
-          { label: '600 - Semi Bold', value: '600' },
-          { label: '700 - Bold', value: '700' },
-          { label: '800 - Extra Bold', value: '800' },
-          { label: '900 - Black', value: '900' }
-        ]
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '600'
-    },
-
-    // Cancel Button Styling
-    cancelButtonBackgroundColor: {
-      label: 'Cancel Button Background',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#f3f4f6'
-    },
-    cancelButtonTextColor: {
-      label: 'Cancel Button Text Color',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#374151'
-    },
-    cancelButtonBorderRadius: {
-      label: 'Cancel Button Border Radius',
-      type: 'Length',
-      options: {
-        unitChoices: [
-          { label: 'px', value: 'px' },
-          { label: '%', value: '%' },
-          { label: 'rem', value: 'rem' }
-        ]
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '8px'
-    },
-
-    // Submit Button Styling
-    submitButtonBackgroundColor: {
-      label: 'Submit Button Background',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#10b981'
-    },
-    submitButtonTextColor: {
-      label: 'Submit Button Text Color',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#ffffff'
-    },
-    submitButtonBorderRadius: {
-      label: 'Submit Button Border Radius',
-      type: 'Length',
-      options: {
-        unitChoices: [
-          { label: 'px', value: 'px' },
-          { label: '%', value: '%' },
-          { label: 'rem', value: 'rem' }
-        ]
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '8px'
-    },
-
-    // Close Button Styling
-    closeButtonColor: {
-      label: 'Close Button Color',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#6b7280'
-    },
-
-    // Form Styling
-    labelColor: {
-      label: 'Label Text Color',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#374151'
-    },
-    inputBorderColor: {
-      label: 'Input Border Color',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#d1d5db'
-    },
-    inputFocusColor: {
-      label: 'Input Focus Color',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#10b981'
-    },
-
-    // Balance Info Styling
-    balanceInfoBackgroundColor: {
-      label: 'Balance Info Background',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#f9fafb'
-    },
-    balanceInfoBorderColor: {
-      label: 'Balance Info Border',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#e5e7eb'
-    },
-    paidOffNoticeBackgroundColor: {
-      label: 'Paid Off Notice Background',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#d1fae5'
-    },
-    paidOffNoticeTextColor: {
-      label: 'Paid Off Notice Text Color',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#065f46'
-    },
-
-    // Supabase Direct Integration (Optional)
-    supabaseUrl: {
-      label: 'Supabase URL (Optional)',
-      type: 'Text',
-      options: {
-        placeholder: 'https://your-project.supabase.co'
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: ''
-    },
-    supabaseKey: {
-      label: 'Supabase Anon Key (Optional)',
-      type: 'Text',
-      options: {
-        placeholder: 'Your anon key...'
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: ''
-    },
-    tableName: {
-      label: 'Table Name',
-      type: 'Text',
-      options: {
-        placeholder: 'payment_plans'
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'payment_plans'
+      defaultValue: 'Schedule Payment',
+      bindable: true
     }
   },
+
   triggerEvents: [
     {
-      name: 'payment-popup-opened',
-      label: 'Payment Popup Opened',
+      name: 'payment-submitted',
+      label: { en: 'On payment submitted' },
       event: {
-        action: 'popup_opened',
-        vendor_id: '',
-        vendor_name: ''
+        paymentData: {},
+        vendorInfo: {},
+        paymentType: ''
       }
     },
     {
-      name: 'payment-plan-created', 
-      label: 'Payment Plan Created',
-      event: {
-        action: 'create_payment_plan',
-        data: {},
-        vendor_id: '',
-        vendor_name: '',
-        amount: 0,
-        type: '',
-        is_fully_paid: false,
-        supabase_result: {}
-      }
-    }
-  ]
-};export default {
-  editor: {
-    label: 'Payment Plan Popup',
-    icon: 'payment',
-    customStylePropertiesOrder: [
-      ['buttonBackgroundColor', 'buttonTextColor'],
-      ['buttonBorderRadius', 'buttonPadding'],
-      ['buttonFontSize', 'buttonFontWeight']
-    ],
-    customSettingsPropertiesOrder: [
-      'buttonText',
-      'title', 
-      'vendorId',
-      'vendorName',
-      'quotedAmount'
-    ]
-  },
-  properties: {
-    buttonText: {
-      label: 'Button Text',
-      type: 'Text',
-      options: {
-        placeholder: 'Create Payment Plan'
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Create Payment Plan'
+      name: 'payment-cancelled',
+      label: { en: 'On payment cancelled' },
+      event: {}
     },
-    title: {
-      label: 'Popup Title', 
-      type: 'Text',
-      options: {
-        placeholder: 'Create Payment Plan'
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 'Create Payment Plan'
-    },
-    vendorId: {
-      label: 'Vendor ID',
-      type: 'Text',
-      options: {
-        placeholder: 'Enter vendor ID'
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: ''
-    },
-    vendorName: {
-      label: 'Vendor Name',
-      type: 'Text', 
-      options: {
-        placeholder: 'Enter vendor name'
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: ''
-    },
-    quotedAmount: {
-      label: 'Quoted Amount',
-      type: 'Number',
-      options: {
-        placeholder: '0.00',
-        min: 0,
-        step: 0.01
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: 0
-    },
-    // Button styling properties
-    buttonBackgroundColor: {
-      label: 'Button Background Color',
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#10b981'
-    },
-    buttonTextColor: {
-      label: 'Button Text Color', 
-      type: 'Color',
-      options: {
-        nullable: false
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '#ffffff'
-    },
-    buttonBorderRadius: {
-      label: 'Button Border Radius',
-      type: 'Length',
-      options: {
-        unitChoices: [
-          { label: 'px', value: 'px' },
-          { label: '%', value: '%' },
-          { label: 'rem', value: 'rem' }
-        ]
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '8px'
-    },
-    buttonPadding: {
-      label: 'Button Padding',
-      type: 'Length',
-      options: {
-        unitChoices: [
-          { label: 'px', value: 'px' },
-          { label: 'rem', value: 'rem' }
-        ]
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '12px 24px'
-    },
-    buttonFontSize: {
-      label: 'Button Font Size',
-      type: 'Length',
-      options: {
-        unitChoices: [
-          { label: 'px', value: 'px' },
-          { label: 'rem', value: 'rem' },
-          { label: 'em', value: 'em' }
-        ]
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '14px'
-    },
-    buttonFontWeight: {
-      label: 'Button Font Weight',
-      type: 'Select',
-      options: {
-        options: [
-          { label: '100 - Thin', value: '100' },
-          { label: '200 - Extra Light', value: '200' },
-          { label: '300 - Light', value: '300' },
-          { label: '400 - Normal', value: '400' },
-          { label: '500 - Medium', value: '500' },
-          { label: '600 - Semi Bold', value: '600' },
-          { label: '700 - Bold', value: '700' },
-          { label: '800 - Extra Bold', value: '800' },
-          { label: '900 - Black', value: '900' }
-        ]
-      },
-      bindable: true,
-      responsive: true,
-      states: true,
-      defaultValue: '600'
-    }
-  },
-  triggerEvents: [
     {
-      name: 'payment-popup-opened',
-      label: 'Payment Popup Opened',
+      name: 'modal-opened',
+      label: { en: 'On modal opened' },
       event: {
-        action: 'popup_opened',
-        vendor_id: '',
-        vendor_name: ''
+        vendorInfo: {}
       }
     },
     {
-      name: 'payment-plan-created', 
-      label: 'Payment Plan Created',
-      event: {
-        action: 'create_payment_plan',
-        data: {},
-        vendor_id: '',
-        vendor_name: '',
-        amount: 0,
-        type: '',
-        is_fully_paid: false
-      }
+      name: 'modal-closed',
+      label: { en: 'On modal closed' },
+      event: {}
     }
   ]
 };
