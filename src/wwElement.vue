@@ -1,0 +1,737 @@
+<template>
+  <div class="ww-payment-plan-popup">
+    <!-- Trigger Button -->
+    <button @click="showPopup" class="payment-plan-trigger-btn">
+      {{ content.buttonText || 'Create Payment Plan' }}
+    </button>
+
+    <!-- Payment Plan Creation Popup -->
+    <div v-if="isPopupVisible" class="popup-overlay" @click="handleBackdropClick">
+      <div class="popup-container" @click.stop>
+        <div class="popup-header">
+          <h2>{{ content.title || 'Create Payment Plan' }}</h2>
+          <button class="close-btn" @click="hidePopup">×</button>
+        </div>
+        
+        <div class="popup-content">
+          <form @submit.prevent="handleSubmit" class="payment-plan-form">
+            
+            <!-- Pre-filled Vendor Display -->
+            <div class="vendor-display">
+              <label>Vendor</label>
+              <div class="vendor-info">
+                <span class="vendor-name">{{ selectedVendorName }}</span>
+                <span class="quoted-amount">Quoted Amount: ${{ formatCurrency(quotedAmount) }}</span>
+              </div>
+            </div>
+
+            <!-- Invoice/Reference -->
+            <div class="form-group">
+              <label>Invoice/Reference Number</label>
+              <input 
+                type="text" 
+                v-model="formData.invoiceReference" 
+                placeholder="INV-2024-001"
+              >
+            </div>
+
+            <!-- Payment Amount (Total is auto-filled from quoted amount) -->
+            <div class="form-row">
+              <div class="form-group">
+                <label>Total Amount Owed</label>
+                <input 
+                  type="number" 
+                  v-model="formData.totalAmount" 
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                  readonly
+                  class="readonly-field"
+                >
+                <small>Auto-filled from vendor quoted amount</small>
+              </div>
+              <div class="form-group">
+                <label>Payment Amount *</label>
+                <input 
+                  type="number" 
+                  v-model="formData.paymentAmount" 
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                  required
+                >
+              </div>
+            </div>
+
+            <!-- Payment Type -->
+            <div class="form-group">
+              <label>Payment Type *</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" v-model="formData.paymentType" value="immediate" required>
+                  <span>Payment Made Today</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" v-model="formData.paymentType" value="historical" required>
+                  <span>Historical Payment (Already Made)</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" v-model="formData.paymentType" value="scheduled" required>
+                  <span>Scheduled Future Payment</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Payment Date -->
+            <div v-if="formData.paymentType === 'historical'" class="form-group">
+              <label>Payment Date *</label>
+              <input 
+                type="date" 
+                v-model="formData.paymentDate" 
+                :max="today"
+                required
+              >
+              <small>When was this payment actually made?</small>
+            </div>
+
+            <div v-if="formData.paymentType === 'scheduled'" class="form-group">
+              <label>Scheduled Payment Date *</label>
+              <input 
+                type="date" 
+                v-model="formData.scheduledDate" 
+                :min="today"
+                required
+              >
+              <small>When do you plan to make this payment?</small>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="form-group">
+              <label>Payment Method *</label>
+              <select v-model="formData.paymentMethod" required>
+                <option value="">Select payment method...</option>
+                <option value="check">Check</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="wire">Wire Transfer</option>
+                <option value="ach">ACH</option>
+                <option value="venmo">Venmo</option>
+                <option value="zelle">Zelle</option>
+                <option value="cash">Cash</option>
+                <option value="credit_card">Credit Card</option>
+              </select>
+            </div>
+
+            <!-- Payment Reference (for tracking) -->
+            <div class="form-group">
+              <label>Payment Reference</label>
+              <input 
+                type="text" 
+                v-model="formData.paymentReference" 
+                :placeholder="getPaymentReferencePlaceholder()"
+              >
+              <small>{{ getPaymentReferenceHelper() }}</small>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group">
+              <label>Notes</label>
+              <textarea 
+                v-model="formData.notes" 
+                placeholder="Additional notes about this payment..."
+                rows="3"
+              ></textarea>
+            </div>
+
+            <!-- Remaining Balance Display -->
+            <div v-if="remainingBalance !== null" class="balance-info">
+              <div class="balance-row">
+                <span>Total Owed:</span>
+                <span class="amount">${{ formatCurrency(formData.totalAmount) }}</span>
+              </div>
+              <div class="balance-row">
+                <span>This Payment:</span>
+                <span class="amount">${{ formatCurrency(formData.paymentAmount) }}</span>
+              </div>
+              <div class="balance-row total">
+                <span>Remaining Balance:</span>
+                <span class="amount" :class="{ 'paid-off': remainingBalance === 0 }">
+                  ${{ formatCurrency(remainingBalance) }}
+                </span>
+              </div>
+              <div v-if="remainingBalance === 0" class="paid-off-notice">
+                ✅ This payment will mark the vendor as fully paid!
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" @click="hidePopup" class="btn-cancel">
+                Cancel
+              </button>
+              <button type="submit" class="btn-submit" :disabled="isProcessing">
+                {{ isProcessing ? 'Creating...' : getSubmitButtonText() }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    content: { type: Object, required: true },
+    /* wwEditor:start */
+    wwEditorState: { type: Object, required: true },
+    /* wwEditor:end */
+  },
+  
+  emits: ['update:content', 'trigger-event'],
+  
+  /* wwEditor:start */
+  wwDefaultContent: {
+    buttonText: 'Create Payment Plan',
+    title: 'Create Payment Plan',
+    vendorId: '',
+    vendorName: '',
+    quotedAmount: 0
+  },
+  /* wwEditor:end */
+  
+  data() {
+    return {
+      isPopupVisible: false,
+      isProcessing: false,
+      formData: {
+        vendorId: '',
+        invoiceReference: '',
+        totalAmount: '',
+        paymentAmount: '',
+        paymentType: '',
+        paymentDate: '', // for historical payments
+        scheduledDate: '', // for scheduled payments
+        paymentMethod: '',
+        paymentReference: '',
+        notes: ''
+      }
+    }
+  },
+
+  computed: {
+    today() {
+      return new Date().toISOString().split('T')[0];
+    },
+    
+    selectedVendorName() {
+      return this.content.vendorName || 'Selected Vendor';
+    },
+    
+    quotedAmount() {
+      return parseFloat(this.content.quotedAmount) || 0;
+    },
+    
+    remainingBalance() {
+      const total = parseFloat(this.formData.totalAmount) || 0;
+      const payment = parseFloat(this.formData.paymentAmount) || 0;
+      
+      if (total > 0 && payment > 0) {
+        return Math.max(0, total - payment);
+      }
+      return null;
+    }
+  },
+  
+  watch: {
+    // Auto-fill total amount when quoted amount changes
+    quotedAmount: {
+      immediate: true,
+      handler(newAmount) {
+        this.formData.totalAmount = newAmount;
+      }
+    },
+    
+    // Auto-fill vendor ID when content changes
+    'content.vendorId': {
+      immediate: true,
+      handler(newVendorId) {
+        this.formData.vendorId = newVendorId;
+      }
+    }
+  },
+  
+  methods: {
+    showPopup() {
+      this.isPopupVisible = true;
+      // Reset form but keep vendor info
+      this.resetForm();
+      this.formData.vendorId = this.content.vendorId || '';
+      this.formData.totalAmount = this.quotedAmount;
+    },
+
+    hidePopup() {
+      this.isPopupVisible = false;
+      this.resetForm();
+    },
+
+    handleBackdropClick() {
+      this.hidePopup();
+    },
+
+    resetForm() {
+      this.formData = {
+        vendorId: '',
+        invoiceReference: '',
+        totalAmount: '',
+        paymentAmount: '',
+        paymentType: '',
+        paymentDate: '',
+        scheduledDate: '',
+        paymentMethod: '',
+        paymentReference: '',
+        notes: ''
+      };
+      this.isProcessing = false;
+    },
+
+    formatCurrency(amount) {
+      const num = parseFloat(amount) || 0;
+      return num.toFixed(2);
+    },
+
+    getPaymentReferencePlaceholder() {
+      const method = this.formData.paymentMethod;
+      switch (method) {
+        case 'check': return 'Check #1234';
+        case 'wire': return 'Wire confirmation #';
+        case 'ach': return 'ACH transaction ID';
+        case 'venmo': return 'Venmo transaction ID';
+        case 'zelle': return 'Zelle confirmation #';
+        case 'bank_transfer': return 'Transfer reference #';
+        default: return 'Reference number or ID';
+      }
+    },
+
+    getPaymentReferenceHelper() {
+      const method = this.formData.paymentMethod;
+      switch (method) {
+        case 'check': return 'Enter the check number for tracking';
+        case 'wire': return 'Wire transfer confirmation number';
+        case 'ach': return 'ACH transaction reference';
+        case 'venmo': return 'Venmo payment ID or username';
+        case 'zelle': return 'Zelle confirmation number';
+        case 'bank_transfer': return 'Bank transfer reference number';
+        default: return 'Any reference number for tracking this payment';
+      }
+    },
+
+    getSubmitButtonText() {
+      const type = this.formData.paymentType;
+      switch (type) {
+        case 'immediate': return 'Record Payment';
+        case 'historical': return 'Add Historical Payment';
+        case 'scheduled': return 'Schedule Payment';
+        default: return 'Create Payment Plan';
+      }
+    },
+
+    async handleSubmit() {
+      this.isProcessing = true;
+      
+      try {
+        // Determine the actual payment date and status
+        let paymentDate = null;
+        let status = 'scheduled';
+        
+        if (this.formData.paymentType === 'immediate') {
+          paymentDate = this.today;
+          status = 'paid';
+        } else if (this.formData.paymentType === 'historical') {
+          paymentDate = this.formData.paymentDate;
+          status = 'paid';
+        } else if (this.formData.paymentType === 'scheduled') {
+          paymentDate = this.formData.scheduledDate;
+          status = 'scheduled';
+        }
+
+        // Prepare payment plan data for Supabase
+        const paymentPlanData = {
+          vendor_id: this.formData.vendorId,
+          invoice_reference: this.formData.invoiceReference,
+          total_amount: parseFloat(this.formData.totalAmount),
+          payment_amount: parseFloat(this.formData.paymentAmount),
+          payment_type: this.formData.paymentType,
+          payment_date: paymentDate,
+          payment_method: this.formData.paymentMethod,
+          payment_reference: this.formData.paymentReference,
+          notes: this.formData.notes,
+          status: status,
+          remaining_balance: this.remainingBalance,
+          is_fully_paid: this.remainingBalance === 0,
+          created_at: new Date().toISOString()
+        };
+
+        // Emit event with the payment plan data
+        this.$emit('trigger-event', {
+          name: 'payment-plan-created',
+          event: {
+            action: 'create_payment_plan',
+            data: paymentPlanData,
+            vendor_id: this.formData.vendorId,
+            vendor_name: this.selectedVendorName,
+            amount: this.formData.paymentAmount,
+            type: this.formData.paymentType,
+            is_fully_paid: this.remainingBalance === 0
+          }
+        });
+
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Close popup
+        this.hidePopup();
+        
+        // Show success message
+        let message = '';
+        if (this.formData.paymentType === 'immediate') {
+          message = `Payment of $${this.formatCurrency(this.formData.paymentAmount)} recorded successfully!`;
+        } else if (this.formData.paymentType === 'historical') {
+          message = `Historical payment of $${this.formatCurrency(this.formData.paymentAmount)} added to records.`;
+        } else {
+          message = `Payment plan scheduled for ${this.formData.scheduledDate}`;
+        }
+        
+        if (this.remainingBalance === 0) {
+          message += ' Vendor is now fully paid! 🎉';
+        }
+        
+        alert(message);
+        
+      } catch (error) {
+        console.error('Failed to create payment plan:', error);
+        alert('Failed to create payment plan. Please try again.');
+      } finally {
+        this.isProcessing = false;
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+.ww-payment-plan-popup {
+  /* Component wrapper */
+}
+
+.payment-plan-trigger-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.payment-plan-trigger-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.popup-container {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 0;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+}
+
+.popup-header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.popup-content {
+  padding: 0 24px 24px;
+}
+
+.vendor-display {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+}
+
+.vendor-display label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.vendor-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vendor-name {
+  font-weight: 600;
+  color: #1e40af;
+  font-size: 16px;
+}
+
+.quoted-amount {
+  font-weight: 600;
+  color: #059669;
+  font-size: 14px;
+}
+
+.payment-plan-form {
+  max-width: 100%;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 4px;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+.readonly-field {
+  background: #f9fafb;
+  cursor: not-allowed;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.radio-option input[type="radio"] {
+  margin-right: 8px;
+  width: auto;
+}
+
+.balance-info {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 20px 0;
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.balance-row.total {
+  border-top: 1px solid #d1d5db;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.amount {
+  font-weight: 600;
+}
+
+.amount.paid-off {
+  color: #059669;
+}
+
+.paid-off-notice {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-cancel,
+.btn-submit {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-cancel:hover {
+  background: #e5e7eb;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.btn-submit:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .popup-container {
+    width: 98%;
+    margin: 10px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .vendor-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}
+</style>

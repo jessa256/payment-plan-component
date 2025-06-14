@@ -1,0 +1,13 @@
+{
+  "name": "payment-plan-component",
+  "version": "1.0.0",
+  "description": "Vendor payment plan management component",
+  "main": "src/wwElement.vue",
+  "scripts": {
+    "serve": "weweb serve",
+    "build": "weweb build"
+  },
+  "devDependencies": {
+    "@weweb/cli": "^3.8.13"
+  }
+}
