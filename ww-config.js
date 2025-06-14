@@ -1,6 +1,6 @@
 export default {
   editor: {
-    label: 'Payment Plan Popup v3.1.2',
+    label: 'Payment Plan Popup v3.1.3',
     icon: 'payment'
   },
   inherit: {
