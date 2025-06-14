@@ -1,6 +1,6 @@
 {
   "name": "payment-plan-component",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "Vendor payment plan management component",
   "main": "src/wwElement.vue",
   "scripts": {
