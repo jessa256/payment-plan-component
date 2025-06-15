@@ -1,13 +1,13 @@
 export default {
   editor: {
-    label: 'Payment Plan Popup v3.1.3',
+    label: 'Payment Plan Popup v3.2.0',
     icon: 'payment'
   },
   inherit: {
     type: 'ww-text',
     values: {
       text: {
-        en: 'Payment Plan'
+        en: 'Payment Plan Popup'
       }
     }
   },
@@ -21,7 +21,7 @@ export default {
       options: {
         placeholder: 'Enter button text'
       },
-      defaultValue: 'Open Payment Plan',
+      defaultValue: 'Create Payment Plan',
       bindable: true
     },
     
@@ -44,6 +44,7 @@ export default {
         en: 'Vendor ID (from context)'
       },
       type: 'Text',
+      section: 'vendor-data',
       options: {
         readonly: true
       },
@@ -55,6 +56,7 @@ export default {
         en: 'Vendor Name (from context)'
       },
       type: 'Text',
+      section: 'vendor-data',
       options: {
         readonly: true
       },
@@ -66,19 +68,20 @@ export default {
         en: 'Quoted Amount (from context)'
       },
       type: 'Number',
+      section: 'vendor-data',
       options: {
         readonly: true
       },
       bindable: true
     },
 
-    // NEW: Amount Remaining calculation (from WeWeb workflow/variable)
+    // Amount Remaining calculation (from WeWeb workflow/variable)
     calculatedAmountRemaining: {
       label: {
         en: 'Amount Remaining (calculated)'
       },
       type: 'Number',
-      section: 'settings',
+      section: 'calculations',
       options: {
         placeholder: 'Bind to WeWeb variable/workflow result'
       },
@@ -87,11 +90,52 @@ export default {
     },
 
     // Form field labels (editable in the editor)
+    vendorSectionTitle: {
+      label: {
+        en: 'Vendor Section Title'
+      },
+      type: 'Text',
+      section: 'labels',
+      defaultValue: 'Vendor Information',
+      bindable: true
+    },
+
+    vendorNameLabel: {
+      label: {
+        en: 'Vendor Name Label'
+      },
+      type: 'Text',
+      section: 'labels',
+      defaultValue: 'Vendor:',
+      bindable: true
+    },
+
+    quotedAmountLabel: {
+      label: {
+        en: 'Quoted Amount Label'
+      },
+      type: 'Text',
+      section: 'labels',
+      defaultValue: 'Quoted Amount:',
+      bindable: true
+    },
+
+    amountRemainingLabel: {
+      label: {
+        en: 'Amount Remaining Label'
+      },
+      type: 'Text',
+      section: 'labels',
+      defaultValue: 'Amount Remaining:',
+      bindable: true
+    },
+
     invoiceLabel: {
       label: {
         en: 'Invoice Label'
       },
       type: 'Text',
+      section: 'labels',
       defaultValue: 'Invoice/Reference Number',
       bindable: true
     },
@@ -101,16 +145,8 @@ export default {
         en: 'Invoice Placeholder'
       },
       type: 'Text',
+      section: 'labels',
       defaultValue: 'Enter invoice or reference number',
-      bindable: true
-    },
-
-    totalAmountLabel: {
-      label: {
-        en: 'Total Amount Label'
-      },
-      type: 'Text',
-      defaultValue: 'Total Amount',
       bindable: true
     },
 
@@ -119,34 +155,8 @@ export default {
         en: 'Payment Amount Label'
       },
       type: 'Text',
+      section: 'labels',
       defaultValue: 'Payment Amount',
-      bindable: true
-    },
-
-    amountRemainingLabel: {
-      label: {
-        en: 'Amount Remaining Label'
-      },
-      type: 'Text',
-      defaultValue: 'Amount Remaining',
-      bindable: true
-    },
-
-    amountRemainingPlaceholder: {
-      label: {
-        en: 'Amount Remaining Placeholder'
-      },
-      type: 'Text',
-      defaultValue: 'Enter payment amount',
-      bindable: true
-    },
-
-    amountRemainingHelper: {
-      label: {
-        en: 'Amount Remaining Helper Text'
-      },
-      type: 'Text',
-      defaultValue: 'Enter the amount you want to pay now',
       bindable: true
     },
 
@@ -155,70 +165,8 @@ export default {
         en: 'Payment Type Label'
       },
       type: 'Text',
+      section: 'labels',
       defaultValue: 'Payment Type',
-      bindable: true
-    },
-
-    immediatePaymentText: {
-      label: {
-        en: 'Immediate Payment Text'
-      },
-      type: 'Text',
-      defaultValue: 'Immediate Payment',
-      bindable: true
-    },
-
-    historicalPaymentText: {
-      label: {
-        en: 'Historical Payment Text'
-      },
-      type: 'Text',
-      defaultValue: 'Historical Payment',
-      bindable: true
-    },
-
-    scheduledPaymentText: {
-      label: {
-        en: 'Scheduled Payment Text'
-      },
-      type: 'Text',
-      defaultValue: 'Scheduled Payment',
-      bindable: true
-    },
-
-    paymentDateLabel: {
-      label: {
-        en: 'Payment Date Label'
-      },
-      type: 'Text',
-      defaultValue: 'Payment Date',
-      bindable: true
-    },
-
-    paymentDateHelper: {
-      label: {
-        en: 'Payment Date Helper Text'
-      },
-      type: 'Text',
-      defaultValue: 'When was this payment made?',
-      bindable: true
-    },
-
-    scheduledDateLabel: {
-      label: {
-        en: 'Scheduled Date Label'
-      },
-      type: 'Text',
-      defaultValue: 'Scheduled Date',
-      bindable: true
-    },
-
-    scheduledDateHelper: {
-      label: {
-        en: 'Scheduled Date Helper Text'
-      },
-      type: 'Text',
-      defaultValue: 'When should this payment be processed?',
       bindable: true
     },
 
@@ -227,25 +175,28 @@ export default {
         en: 'Payment Method Label'
       },
       type: 'Text',
+      section: 'labels',
       defaultValue: 'Payment Method',
       bindable: true
     },
 
-    paymentMethodPlaceholder: {
+    referenceLabel: {
       label: {
-        en: 'Payment Method Placeholder'
+        en: 'Reference Label'
       },
       type: 'Text',
-      defaultValue: 'e.g., Credit Card, Bank Transfer, Check',
+      section: 'labels',
+      defaultValue: 'Reference/Confirmation Number',
       bindable: true
     },
 
-    paymentReferenceLabel: {
+    referencePlaceholder: {
       label: {
-        en: 'Payment Reference Label'
+        en: 'Reference Placeholder'
       },
       type: 'Text',
-      defaultValue: 'Payment Reference',
+      section: 'labels',
+      defaultValue: 'Optional reference number',
       bindable: true
     },
 
@@ -254,7 +205,8 @@ export default {
         en: 'Notes Label'
       },
       type: 'Text',
-      defaultValue: 'Notes (Optional)',
+      section: 'labels',
+      defaultValue: 'Notes',
       bindable: true
     },
 
@@ -263,15 +215,79 @@ export default {
         en: 'Notes Placeholder'
       },
       type: 'Text',
-      defaultValue: 'Add any additional notes about this payment',
+      section: 'labels',
+      defaultValue: 'Optional notes or comments',
       bindable: true
     },
 
-    cancelButtonText: {
+    // Date labels for different payment types
+    immediateDateLabel: {
+      label: {
+        en: 'Immediate Date Label'
+      },
+      type: 'Text',
+      section: 'labels',
+      defaultValue: 'Payment Date',
+      bindable: true
+    },
+
+    historicalDateLabel: {
+      label: {
+        en: 'Historical Date Label'
+      },
+      type: 'Text',
+      section: 'labels',
+      defaultValue: 'Date Paid (Past)',
+      bindable: true
+    },
+
+    scheduledDateLabel: {
+      label: {
+        en: 'Scheduled Date Label'
+      },
+      type: 'Text',
+      section: 'labels',
+      defaultValue: 'Scheduled Date (Future)',
+      bindable: true
+    },
+
+    // Submit button text for different payment types
+    immediateSubmitText: {
+      label: {
+        en: 'Immediate Submit Text'
+      },
+      type: 'Text',
+      section: 'buttons',
+      defaultValue: 'Process Payment',
+      bindable: true
+    },
+
+    historicalSubmitText: {
+      label: {
+        en: 'Historical Submit Text'
+      },
+      type: 'Text',
+      section: 'buttons',
+      defaultValue: 'Record Payment',
+      bindable: true
+    },
+
+    scheduledSubmitText: {
+      label: {
+        en: 'Scheduled Submit Text'
+      },
+      type: 'Text',
+      section: 'buttons',
+      defaultValue: 'Schedule Payment',
+      bindable: true
+    },
+
+    cancelText: {
       label: {
         en: 'Cancel Button Text'
       },
       type: 'Text',
+      section: 'buttons',
       defaultValue: 'Cancel',
       bindable: true
     },
@@ -281,108 +297,158 @@ export default {
         en: 'Processing Text'
       },
       type: 'Text',
+      section: 'buttons',
       defaultValue: 'Processing...',
       bindable: true
     },
 
-    immediateSubmitText: {
+    // Button styling
+    buttonBackgroundColor: {
       label: {
-        en: 'Immediate Submit Button Text'
-      },
-      type: 'Text',
-      defaultValue: 'Process Payment',
-      bindable: true
-    },
-
-    historicalSubmitText: {
-      label: {
-        en: 'Historical Submit Button Text'
-      },
-      type: 'Text',
-      defaultValue: 'Record Payment',
-      bindable: true
-    },
-
-    scheduledSubmitText: {
-      label: {
-        en: 'Scheduled Submit Button Text'
-      },
-      type: 'Text',
-      defaultValue: 'Schedule Payment',
-      bindable: true
-    },
-
-    // NEW: Styling options for required fields
-    requiredFieldColor: {
-      label: {
-        en: 'Required Asterisk Color'
+        en: 'Trigger Button Background'
       },
       type: 'Color',
-      defaultValue: '#dc3545',
-      bindable: true
-    },
-
-    errorBorderColor: {
-      label: {
-        en: 'Error Border Color'
-      },
-      type: 'Color',
-      defaultValue: '#dc3545',
-      bindable: true
-    },
-
-    amountRemainingColor: {
-      label: {
-        en: 'Amount Remaining Color'
-      },
-      type: 'Color',
-      defaultValue: '#28a745',
+      section: 'styling',
+      defaultValue: '500',
       bindable: true
     }
   },
-
-  triggerEvents: [
-    {
-      name: 'payment-submitted',
-      label: { en: 'On payment submitted' },
-      event: {
-        paymentData: {},
-        vendorInfo: {},
-        paymentType: ''
-      }
-    },
-    {
-      name: 'payment-cancelled',
-      label: { en: 'On payment cancelled' },
-      event: {}
-    },
+  
+  // Component events
+  triggers: [
     {
       name: 'modal-opened',
-      label: { en: 'On modal opened' },
-      event: {
-        vendorInfo: {}
+      label: {
+        en: 'Modal Opened'
       }
     },
     {
       name: 'modal-closed',
-      label: { en: 'On modal closed' },
-      event: {}
-    },
-    // NEW: Validation events
-    {
-      name: 'validation-failed',
-      label: { en: 'On validation failed' },
-      event: {
-        errors: {}
+      label: {
+        en: 'Modal Closed'
       }
     },
     {
-      name: 'amount-remaining-updated',
-      label: { en: 'On amount remaining updated' },
-      event: {
-        amountRemaining: 0,
-        vendorId: ''
+      name: 'payment-submitted',
+      label: {
+        en: 'Payment Submitted'
+      }
+    },
+    {
+      name: 'payment-success',
+      label: {
+        en: 'Payment Success'
       }
     }
   ]
-};
+}
+      defaultValue: '#007bff',
+      bindable: true
+    },
+
+    buttonTextColor: {
+      label: {
+        en: 'Trigger Button Text Color'
+      },
+      type: 'Color',
+      section: 'styling',
+      defaultValue: '#ffffff',
+      bindable: true
+    },
+
+    cancelButtonBackgroundColor: {
+      label: {
+        en: 'Cancel Button Background'
+      },
+      type: 'Color',
+      section: 'styling',
+      defaultValue: '#6c757d',
+      bindable: true
+    },
+
+    cancelButtonTextColor: {
+      label: {
+        en: 'Cancel Button Text Color'
+      },
+      type: 'Color',
+      section: 'styling',
+      defaultValue: '#ffffff',
+      bindable: true
+    },
+
+    submitButtonBackgroundColor: {
+      label: {
+        en: 'Submit Button Background'
+      },
+      type: 'Color',
+      section: 'styling',
+      defaultValue: '#28a745',
+      bindable: true
+    },
+
+    submitButtonTextColor: {
+      label: {
+        en: 'Submit Button Text Color'
+      },
+      type: 'Color',
+      section: 'styling',
+      defaultValue: '#ffffff',
+      bindable: true
+    },
+
+    disabledButtonColor: {
+      label: {
+        en: 'Disabled Button Color'
+      },
+      type: 'Color',
+      section: 'styling',
+      defaultValue: '#6c757d',
+      bindable: true
+    },
+
+    closeButtonColor: {
+      label: {
+        en: 'Close Button Color'
+      },
+      type: 'Color',
+      section: 'styling',
+      defaultValue: '#000000',
+      bindable: true
+    },
+
+    buttonBorderRadius: {
+      label: {
+        en: 'Button Border Radius'
+      },
+      type: 'Text',
+      section: 'styling',
+      defaultValue: '4px',
+      bindable: true
+    },
+
+    buttonPadding: {
+      label: {
+        en: 'Button Padding'
+      },
+      type: 'Text',
+      section: 'styling',
+      defaultValue: '10px 20px',
+      bindable: true
+    },
+
+    buttonFontSize: {
+      label: {
+        en: 'Button Font Size'
+      },
+      type: 'Text',
+      section: 'styling',
+      defaultValue: '14px',
+      bindable: true
+    },
+
+    buttonFontWeight: {
+      label: {
+        en: 'Button Font Weight'
+      },
+      type: 'Text',
+      section: 'styling',
