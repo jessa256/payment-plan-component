@@ -309,39 +309,6 @@ export default {
       },
       type: 'Color',
       section: 'styling',
-      defaultValue: '500',
-      bindable: true
-    }
-  },
-  
-  // Component events
-  triggers: [
-    {
-      name: 'modal-opened',
-      label: {
-        en: 'Modal Opened'
-      }
-    },
-    {
-      name: 'modal-closed',
-      label: {
-        en: 'Modal Closed'
-      }
-    },
-    {
-      name: 'payment-submitted',
-      label: {
-        en: 'Payment Submitted'
-      }
-    },
-    {
-      name: 'payment-success',
-      label: {
-        en: 'Payment Success'
-      }
-    }
-  ]
-}
       defaultValue: '#007bff',
       bindable: true
     },
@@ -452,3 +419,36 @@ export default {
       },
       type: 'Text',
       section: 'styling',
+      defaultValue: '500',
+      bindable: true
+    }
+  },
+  
+  // Component events
+  triggers: [
+    {
+      name: 'modal-opened',
+      label: {
+        en: 'Modal Opened'
+      }
+    },
+    {
+      name: 'modal-closed',
+      label: {
+        en: 'Modal Closed'
+      }
+    },
+    {
+      name: 'payment-submitted',
+      label: {
+        en: 'Payment Submitted'
+      }
+    },
+    {
+      name: 'payment-success',
+      label: {
+        en: 'Payment Success'
+      }
+    }
+  ]
+}

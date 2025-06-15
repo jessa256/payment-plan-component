@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolved Vue 3 compatibility issues with modern WeWeb versions
 - Fixed component rendering conflicts in popup environments
 - Updated to use modern Vue 3 patterns instead of deprecated WeWeb APIs
+- **Hotfix**: Corrected syntax errors in ww-config.js (missing commas after bindable properties)
 
 ### Added
 - **NEW**: Popup-over-popup architecture with proper z-index layering (z-index: 10000)
